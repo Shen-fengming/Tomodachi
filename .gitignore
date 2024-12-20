@@ -1,0 +1,12 @@
+# Python 缓存和虚拟环境
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node.js（未来加入 Electron 时）
+node_modules/
+*.log
+
+# IDE 配置文件
+.vscode/
