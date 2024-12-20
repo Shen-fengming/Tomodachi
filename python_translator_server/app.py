@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import json
 import spacy
 
 # 初始化 Flask 应用
@@ -19,10 +20,28 @@ def analyze_text_logic(text):
             "lemma": token.lemma_,
             "pos": token.pos_,
             "tag": token.tag_,
-            "is_oov": token.is_oov
+            "is_oov": token.is_oov,
+            "is_n5": search_word_in_json(token.lemma_, json_file)
         }
         for token in doc
     ]
+
+json_file = "python_translator_server/database/jlpt/n5.json"
+
+def search_word_in_json(word_to_search, json_file):
+    # 加载 JSON 文件
+    with open(json_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    # 查询单词
+    for entry in data:
+        if entry.get("word") == word_to_search:
+            return {
+                "found": True,
+                "details": entry
+            }
+
+    return {"found": False}
 
 
 @app.route('/analyze', methods=['POST'])
@@ -42,7 +61,8 @@ def analyze_text():
             "lemma": token.lemma_,
             "pos": token.pos_,
             "tag": token.tag_,
-            "is_oov": token.is_oov  # 标记是否为未知词汇
+            "is_oov": token.is_oov,  # 标记是否为未知词汇
+            "is_n5": search_word_in_json(token.lemma_, json_file)
         }
         for token in doc
     ]
